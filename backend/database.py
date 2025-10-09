@@ -9,6 +9,12 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://username:password@localhost:5432/mobile_shop_db")
 
+# Handle Render's PostgreSQL URL format
+if DATABASE_URL and "postgres://" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+print(f"🔗 Database URL: {DATABASE_URL[:50]}...")  # Log first 50 chars for debugging
+
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
