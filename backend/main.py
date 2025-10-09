@@ -69,6 +69,25 @@ async def seed_database_endpoint():
     except Exception as e:
         return {"message": f"Database seeding failed: {str(e)}", "status": "error"}
 
+@app.get("/admin/debug-phones")
+async def debug_phones(max_price: float = 30000, db: Session = Depends(get_db)):
+    """Debug endpoint to check phone data"""
+    try:
+        phones = db.query(DBMobilePhone).filter(DBMobilePhone.price <= max_price).all()
+        return {
+            "count": len(phones),
+            "phones": [
+                {
+                    "id": phone.id,
+                    "name": phone.name,
+                    "brand": phone.brand,
+                    "price": phone.price
+                } for phone in phones
+            ]
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 # Authentication endpoints
 @app.post("/auth/register", response_model=UserModel)
 async def register(user_data: UserCreate, db: Session = Depends(get_db)):
