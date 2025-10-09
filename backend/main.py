@@ -28,7 +28,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000", 
         "http://127.0.0.1:3000",
-        "https://ai-mobile-shopping-agent.vercel.app",  # Add your Vercel URL here
+        "https://ai-mobile-shopping-agent.vercel.app",  # Your Vercel URL
         "https://*.vercel.app"  # Allow all Vercel preview deployments
     ],
     allow_credentials=True,
