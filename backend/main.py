@@ -88,6 +88,29 @@ async def debug_phones(max_price: float = 30000, db: Session = Depends(get_db)):
     except Exception as e:
         return {"error": str(e)}
 
+@app.post("/admin/test-chat-direct")
+async def test_chat_direct(message: str = "Best camera phone under ₹30,000?", db: Session = Depends(get_db)):
+    """Test chat with direct database query bypassing AI analysis"""
+    try:
+        # Direct database query without AI analysis
+        phones = db.query(DBMobilePhone).filter(DBMobilePhone.price <= 30000).all()
+        
+        # Format response
+        response = f"Found {len(phones)} phones under ₹30,000:\n\n"
+        for phone in phones:
+            response += f"**{phone.name}** ({phone.brand}) - ₹{phone.price:,}\n"
+            response += f"Camera: {phone.camera_main}\n"
+            response += f"RAM: {phone.ram}GB, Storage: {phone.storage}GB\n\n"
+        
+        return {
+            "message": message,
+            "response": response,
+            "phone_count": len(phones),
+            "phones": [{"name": p.name, "brand": p.brand, "price": p.price} for p in phones]
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 # Authentication endpoints
 @app.post("/auth/register", response_model=UserModel)
 async def register(user_data: UserCreate, db: Session = Depends(get_db)):
