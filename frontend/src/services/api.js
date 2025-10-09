@@ -3,6 +3,9 @@ import axios from 'axios';
 // Force production URL for now
 const API_BASE_URL = 'https://ai-mobile-shopping-agent-backend.onrender.com';
 
+// Debug logging
+console.log('🔗 API Base URL:', API_BASE_URL);
+
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
