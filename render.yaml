@@ -25,5 +25,3 @@ services:
     name: ai-mobile-shopping-agent-db
     env: postgresql
     plan: free
-    databaseName: mobile_shop_db
-    databaseUser: postgres
