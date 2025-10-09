@@ -59,6 +59,16 @@ async def startup_event():
 async def root():
     return {"message": "Mobile Phone Shopping Chat Agent API"}
 
+@app.post("/admin/seed-database")
+async def seed_database_endpoint():
+    """Manual endpoint to seed the database"""
+    try:
+        from seed_data import seed_database
+        seed_database()
+        return {"message": "Database seeded successfully", "status": "success"}
+    except Exception as e:
+        return {"message": f"Database seeding failed: {str(e)}", "status": "error"}
+
 # Authentication endpoints
 @app.post("/auth/register", response_model=UserModel)
 async def register(user_data: UserCreate, db: Session = Depends(get_db)):
