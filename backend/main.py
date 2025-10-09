@@ -23,16 +23,11 @@ load_dotenv()
 app = FastAPI(title="Mobile Phone Shopping Chat Agent", version="1.0.0")
 
 # CORS middleware
+# Allow all origins for now to fix CORS issues
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000", 
-        "http://127.0.0.1:3000",
-        "https://ai-mobile-shopping-agent.vercel.app",
-        "https://ai-mobile-shopping-agent-8dc42lhzl-drono07s-projects.vercel.app",  # Your actual Vercel URL
-        "https://*.vercel.app"  # Allow all Vercel preview deployments
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],  # Allow all origins temporarily
+    allow_credentials=False,  # Must be False when allow_origins is ["*"]
     allow_methods=["*"],
     allow_headers=["*"],
 )
