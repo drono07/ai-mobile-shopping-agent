@@ -88,6 +88,27 @@ async def debug_phones(max_price: float = 30000, db: Session = Depends(get_db)):
     except Exception as e:
         return {"error": str(e)}
 
+@app.get("/admin/db-status")
+async def db_status(db: Session = Depends(get_db)):
+    """Check database connection and table status"""
+    try:
+        # Check if tables exist
+        from sqlalchemy import inspect
+        inspector = inspect(db.bind)
+        tables = inspector.get_table_names()
+        
+        # Count phones in each table
+        phone_count = db.query(DBMobilePhone).count()
+        
+        return {
+            "status": "connected",
+            "tables": tables,
+            "phone_count": phone_count,
+            "database_url": os.getenv("DATABASE_URL", "not_set")[:50] + "..."
+        }
+    except Exception as e:
+        return {"error": str(e), "status": "error"}
+
 @app.post("/admin/test-chat-direct")
 async def test_chat_direct(message: str = "Best camera phone under ₹30,000?", db: Session = Depends(get_db)):
     """Test chat with direct database query bypassing AI analysis"""
