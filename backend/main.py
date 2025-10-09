@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
 from dotenv import load_dotenv
+import os
 
 from database import get_db, create_tables, MobilePhone as DBMobilePhone, User, Conversation, ConversationMessage
 from models import (
@@ -24,7 +25,12 @@ app = FastAPI(title="Mobile Phone Shopping Chat Agent", version="1.0.0")
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=[
+        "http://localhost:3000", 
+        "http://127.0.0.1:3000",
+        "https://ai-mobile-shopping-agent.vercel.app",  # Add your Vercel URL here
+        "https://*.vercel.app"  # Allow all Vercel preview deployments
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,7 +39,25 @@ app.add_middleware(
 # Initialize AI agent
 ai_agent = MobilePhoneAgent()
 
-# Database tables are created manually - no startup event needed
+# Database setup on startup
+@app.on_event("startup")
+async def startup_event():
+    """Setup database tables on startup"""
+    try:
+        # Create tables
+        create_tables()
+        print("✅ Database tables created successfully")
+        
+        # Check if we need to seed data
+        if os.getenv("SETUP_DB") == "true":
+            print("🌱 Seeding database with initial data...")
+            from seed_data import seed_database
+            seed_database()
+            print("✅ Database seeded successfully")
+            
+    except Exception as e:
+        print(f"❌ Database setup failed: {e}")
+        # Don't fail startup, just log the error
 
 @app.get("/")
 async def root():
