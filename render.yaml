@@ -21,7 +21,6 @@ services:
       - key: SETUP_DB
         value: "true"
 
-  - type: pserv
-    name: ai-mobile-shopping-agent-db
-    env: postgresql
+databases:
+  - name: ai-mobile-shopping-agent-db
     plan: free
