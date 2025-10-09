@@ -100,11 +100,17 @@ async def db_status(db: Session = Depends(get_db)):
         # Count phones in each table
         phone_count = db.query(DBMobilePhone).count()
         
+        # Get database URL info (safely)
+        db_url = os.getenv("DATABASE_URL", "not_set")
+        db_url_parts = db_url.split("@") if "@" in db_url else [db_url]
+        db_host = db_url_parts[-1].split("/")[0] if len(db_url_parts) > 1 else "unknown"
+        
         return {
             "status": "connected",
             "tables": tables,
             "phone_count": phone_count,
-            "database_url": os.getenv("DATABASE_URL", "not_set")[:50] + "..."
+            "database_host": db_host,
+            "database_name": db_url.split("/")[-1] if "/" in db_url else "unknown"
         }
     except Exception as e:
         return {"error": str(e), "status": "error"}
