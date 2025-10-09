@@ -280,7 +280,9 @@ FINAL REMINDER:
 - ONLY recommend phones from the database data provided above
 - DO NOT mention "Google Pixel 6a", "Motorola Edge 60 Pro", or any other phones not in the database
 - Your recommendations must match the sidebar recommendations exactly
-- If the database has phones under ₹30,000, recommend ONLY those phones
+- If the database has phones under ₹30,000, recommend ALL those phones that match the criteria
+- **FOR PRICE-BASED QUERIES**: Show ALL phones within the price range, not just a few
 - **FOR SPECIFIC PHONE QUERIES**: Focus only on the phone they asked about, do not suggest alternatives
 - **FOR GENERAL QUERIES**: Provide multiple relevant options from the database
+- **CRITICAL**: If you see phones in the database data that match the user's criteria, you MUST recommend them
 """

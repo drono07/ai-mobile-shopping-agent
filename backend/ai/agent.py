@@ -192,6 +192,13 @@ class MobilePhoneAgent:
             db_phones = self._get_phones_from_analysis(db, query_analysis)
             print(f"Found {len(db_phones)} phones in database")
             
+            # If no phones found, try a broader search
+            if len(db_phones) == 0:
+                print("No phones found with filters, trying broader search...")
+                # Try without filters to get all phones
+                db_phones = db.query(DBMobilePhone).limit(20).all()
+                print(f"Broader search found {len(db_phones)} phones")
+            
             # Convert to response format
             phone_models = [MobilePhone.from_orm(phone) for phone in db_phones]
             
