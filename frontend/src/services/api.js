@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://ai-mobile-shopping-agent-backend.onrender.com';
+// Force production URL for now
+const API_BASE_URL = 'https://ai-mobile-shopping-agent-backend.onrender.com';
 
 // Create axios instance
 const api = axios.create({
