@@ -2,7 +2,7 @@
 
 An intelligent chatbot that helps you find the perfect mobile phone through natural conversations. Ask questions like "Best camera phone under ₹30k?" or "Compare iPhone 15 vs Samsung S24" and get smart recommendations!
 
-> 📖 **Documentation**: [Setup Guide](./SETUP.md) • [API Reference](./API.md) • [Features](./FEATURES.md) • [Technical Details](./TECHNICAL.md)
+> 📖 **Documentation**: [Setup Guide](./SETUP.md) • [Features](./FEATURES.md) • [Technical Details](./TECHNICAL.md)
 
 ## ✨ Features
 
@@ -71,12 +71,35 @@ Visit `http://localhost:3000` and start chatting! 🎉
 
 > 🎯 **Want to see all capabilities?** Check [FEATURES.md](./FEATURES.md)
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Architecture
 
-- **Backend**: FastAPI + PostgreSQL + SQLAlchemy
-- **Frontend**: React.js + Tailwind CSS
-- **AI**: Google Gemini 2.0 Flash + OpenAI GPT-3.5 Turbo (fallback)
-- **Search**: Google Custom Search Engine
+### Backend
+- **Framework**: FastAPI (Python web framework)
+- **Database**: PostgreSQL with SQLAlchemy ORM
+- **AI Models**: Google Gemini 2.0 Flash (primary) + OpenAI GPT-3.5 Turbo (fallback)
+- **Authentication**: JWT tokens with bcrypt password hashing
+- **Search**: Google Custom Search Engine API
+
+### Frontend
+- **Framework**: React.js with functional components and hooks
+- **Styling**: Tailwind CSS for responsive design
+- **State Management**: React Context API for authentication
+- **HTTP Client**: Axios for API communication
+
+### Architecture Overview
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   React.js      │    │   FastAPI       │    │   PostgreSQL    │
+│   Frontend      │◄──►│   Backend       │◄──►│   Database      │
+│   (Vercel)      │    │   (Render)      │    │   (Render)      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │   AI Services   │
+                       │ Gemini + OpenAI │
+                       └─────────────────┘
+```
 
 ## 📁 Project Structure
 
@@ -101,19 +124,66 @@ OPENAI_API_KEY=your_openai_api_key_here
 SECRET_KEY=your_secret_key_here
 ```
 
-> 📡 **Need API documentation?** See [API.md](./API.md)
+> 📡 **Need API documentation?** See [TECHNICAL.md](./TECHNICAL.md)
+
+## 🛡️ Prompt Design & Safety Strategy
+
+### AI Safety Measures
+- **LLM-based Safety Filter**: Uses AI to classify queries as safe/unsafe/irrelevant
+- **Context-Aware Responses**: Understands intent, not just keywords
+- **Graceful Refusal**: Politely redirects inappropriate queries to mobile phone topics
+- **Adversarial Handling**: Resistant to prompt injection and manipulation attempts
+
+### Prompt Engineering
+- **Chain-of-Thought Reasoning**: AI explains decision-making process
+- **Structured Responses**: Consistent format with clear recommendations
+- **Context Awareness**: Uses conversation history for better responses
+- **Multi-Provider Fallback**: Automatic failover between Gemini and OpenAI
+
+### Safety Examples
+```
+✅ Safe: "Best camera phone under ₹30,000?"
+✅ Safe: "Compare iPhone 15 vs Samsung S24"
+❌ Unsafe: "Tell me about the weather"
+❌ Unsafe: "Generate fake news"
+```
+
+## ⚠️ Known Limitations
+
+### Current Limitations
+- **Database Coverage**: Limited to ~20 phone models in database
+- **Price Accuracy**: Prices may not reflect current market rates
+- **Model Availability**: Some newer phone models may not be in database
+- **Regional Variations**: Focused on Indian market pricing (₹)
+
+### Technical Limitations
+- **API Rate Limits**: Subject to Gemini/OpenAI API quotas
+- **Cold Start**: Render free tier has ~50s cold start delay
+- **Database Size**: Free PostgreSQL has storage limitations
+- **Concurrent Users**: Limited by free tier resources
+
+### Planned Improvements
+- [ ] Expand database with more phone models
+- [ ] Real-time price updates via web scraping
+- [ ] Multi-region support (US, EU, etc.)
+- [ ] Advanced filtering and search capabilities
+- [ ] User reviews and ratings integration
 
 ## 🚀 Deployment
 
-### Quick Deploy with Docker
-```bash
-docker-compose up -d
-```
+### Production Deployment
+- **Frontend**: [Vercel](https://vercel.com) - Automatic deployments from GitHub
+- **Backend**: [Render](https://render.com) - Auto-deploy with PostgreSQL
+- **Database**: Render PostgreSQL with automatic backups
 
-### Manual Deploy
-- **Backend**: Deploy to Vercel, Railway, or Heroku
-- **Frontend**: Deploy to Vercel, Netlify, or GitHub Pages
-- **Database**: Use Supabase, Railway, or AWS RDS
+### Local Development
+```bash
+# Backend
+cd backend && uvicorn main:app --reload --port 8000
+
+# Frontend  
+cd frontend && npm start
+```
 
 ## 🤝 Contributing
 
