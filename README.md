@@ -171,12 +171,150 @@ SECRET_KEY=your_secret_key_here
 
 ## 🚀 Deployment
 
-### Production Deployment
-- **Frontend**: [Vercel](https://vercel.com) - Automatic deployments from GitHub
-- **Backend**: [Render](https://render.com) - Auto-deploy with PostgreSQL
-- **Database**: Render PostgreSQL with automatic backups
+### Production Deployment Strategy
 
-### Local Development
+We use a **hybrid deployment approach** for optimal performance and cost-effectiveness:
+
+#### 🌐 Frontend Deployment (Vercel)
+- **Platform**: [Vercel](https://vercel.com)
+- **URL**: https://ai-mobile-shopping-agent-osxotanta-drono07s-projects.vercel.app/
+- **Benefits**: 
+  - Automatic deployments from GitHub
+  - Global CDN for fast loading
+  - Free tier with generous limits
+  - Built-in SSL certificates
+
+**Deployment Steps:**
+1. Connect GitHub repository to Vercel
+2. Set build settings:
+   - Framework: Create React App
+   - Root Directory: `./frontend`
+   - Build Command: `npm run build`
+   - Output Directory: `build`
+3. Configure environment variables:
+   ```
+   REACT_APP_API_URL=https://ai-mobile-shopping-agent-backend.onrender.com
+   ```
+
+#### ⚙️ Backend Deployment (Render)
+- **Platform**: [Render](https://render.com)
+- **URL**: https://ai-mobile-shopping-agent-backend.onrender.com/
+- **Benefits**:
+  - Auto-deploy from GitHub
+  - Built-in PostgreSQL database
+  - Free tier available
+  - Automatic SSL certificates
+
+**Deployment Steps:**
+1. Create `render.yaml` configuration file
+2. Deploy using Render Blueprint:
+   ```yaml
+   services:
+     - type: web
+       name: ai-mobile-shopping-agent-backend
+       env: python
+       plan: free
+       buildCommand: cd backend && pip install -r requirements.txt
+       startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+   ```
+3. Configure environment variables:
+   ```
+   GEMINI_API_KEY=your_gemini_api_key
+   OPENAI_API_KEY=your_openai_api_key
+   GOOGLE_API_KEY=your_google_api_key
+   GOOGLE_CSE_ID=your_cse_id
+   SECRET_KEY=your_secret_key
+   DATABASE_URL=postgresql://postgres:password@host:port/database
+   ```
+
+#### 🗄️ Database Deployment (Render PostgreSQL)
+- **Platform**: Render PostgreSQL (included with backend)
+- **Benefits**:
+  - Automatic backups
+  - Connection pooling
+  - Free tier with 1GB storage
+  - Automatic scaling
+
+**Database Setup:**
+1. Created via `render.yaml`:
+   ```yaml
+   databases:
+     - name: ai-mobile-shopping-agent-db
+       plan: free
+   ```
+2. Auto-seeded with phone data on startup
+3. Tables created automatically via SQLAlchemy
+
+### 🔧 Deployment Configuration Files
+
+#### `render.yaml` (Backend & Database)
+```yaml
+services:
+  - type: web
+    name: ai-mobile-shopping-agent-backend
+    env: python
+    plan: free
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: GOOGLE_CSE_ID
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: SETUP_DB
+        value: "true"
+
+databases:
+  - name: ai-mobile-shopping-agent-db
+    plan: free
+```
+
+#### `vercel.json` (Frontend)
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ]
+}
+```
+
+### 🌐 Live Application URLs
+
+- **Frontend**: https://ai-mobile-shopping-agent-osxotanta-drono07s-projects.vercel.app/
+- **Backend API**: https://ai-mobile-shopping-agent-backend.onrender.com/
+- **API Health Check**: https://ai-mobile-shopping-agent-backend.onrender.com/health
+
+### 🔄 Deployment Workflow
+
+1. **Code Changes**: Push to GitHub `main` branch
+2. **Automatic Deployment**: 
+   - Vercel automatically deploys frontend
+   - Render automatically deploys backend
+3. **Database Updates**: Handled automatically via SQLAlchemy migrations
+4. **Environment Variables**: Managed through platform dashboards
+
+### 🛠️ Local Development
 ```bash
 # Backend
 cd backend && uvicorn main:app --reload --port 8000
@@ -184,6 +322,14 @@ cd backend && uvicorn main:app --reload --port 8000
 # Frontend  
 cd frontend && npm start
 ```
+
+### 📊 Deployment Benefits
+
+- **Cost-Effective**: Free tiers for both platforms
+- **Scalable**: Easy to upgrade to paid plans
+- **Reliable**: 99.9% uptime with automatic failover
+- **Fast**: Global CDN and optimized builds
+- **Secure**: Automatic SSL and security updates
 
 ## 🤝 Contributing
 
