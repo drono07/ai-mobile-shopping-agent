@@ -92,11 +92,14 @@ async def debug_phones(max_price: float = 30000, db: Session = Depends(get_db)):
 async def test_chat_direct(message: str = "Best camera phone under ₹30,000?", db: Session = Depends(get_db)):
     """Test chat with direct database query bypassing AI analysis"""
     try:
+        # Get all phones first to debug
+        all_phones = db.query(DBMobilePhone).all()
+        
         # Direct database query without AI analysis
         phones = db.query(DBMobilePhone).filter(DBMobilePhone.price <= 30000).all()
         
         # Format response
-        response = f"Found {len(phones)} phones under ₹30,000:\n\n"
+        response = f"Found {len(phones)} phones under ₹30,000 (out of {len(all_phones)} total):\n\n"
         for phone in phones:
             response += f"**{phone.name}** ({phone.brand}) - ₹{phone.price:,}\n"
             response += f"Camera: {phone.camera_main}\n"
@@ -106,7 +109,9 @@ async def test_chat_direct(message: str = "Best camera phone under ₹30,000?", 
             "message": message,
             "response": response,
             "phone_count": len(phones),
-            "phones": [{"name": p.name, "brand": p.brand, "price": p.price} for p in phones]
+            "total_phones": len(all_phones),
+            "phones": [{"name": p.name, "brand": p.brand, "price": p.price} for p in phones],
+            "all_phones": [{"name": p.name, "brand": p.brand, "price": p.price} for p in all_phones[:5]]  # First 5 for debugging
         }
     except Exception as e:
         return {"error": str(e)}
