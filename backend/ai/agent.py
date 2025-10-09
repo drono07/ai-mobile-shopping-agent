@@ -192,12 +192,26 @@ class MobilePhoneAgent:
             db_phones = self._get_phones_from_analysis(db, query_analysis)
             print(f"Found {len(db_phones)} phones in database")
             
-            # If no phones found, try a broader search
-            if len(db_phones) == 0:
-                print("No phones found with filters, trying broader search...")
-                # Try without filters to get all phones
-                db_phones = db.query(DBMobilePhone).limit(20).all()
+            # If query analysis incorrectly filtered by brands when no brands were mentioned, try broader search
+            if len(db_phones) < 5 and query_analysis.get('brands') and not any(brand.lower() in user_query.lower() for brand in query_analysis.get('brands', [])):
+                print("Query analysis may have incorrectly filtered by brands, trying broader search...")
+                # Try with only price and feature filters, ignore brand filters
+                broader_filters = {}
+                if query_analysis.get('price_range'):
+                    broader_filters['price_range'] = query_analysis['price_range']
+                if query_analysis.get('features'):
+                    broader_filters['features'] = query_analysis['features']
+                
+                from utils import DatabaseQueryBuilder
+                query_builder = DatabaseQueryBuilder(db)
+                db_phones = query_builder.build_phone_query(broader_filters)
                 print(f"Broader search found {len(db_phones)} phones")
+            
+            # If still no phones found, try without any filters
+            if len(db_phones) == 0:
+                print("No phones found with any filters, trying without filters...")
+                db_phones = db.query(DBMobilePhone).limit(20).all()
+                print(f"No-filter search found {len(db_phones)} phones")
             
             # Convert to response format
             phone_models = [MobilePhone.from_orm(phone) for phone in db_phones]

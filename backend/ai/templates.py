@@ -23,7 +23,7 @@ Chain of Thought:
 - "Compact" = feature requirement (size)
 - "Android" = OS requirement (not iOS)
 - "under ₹25k" = price range (max: 25000)
-- No specific brand mentioned
+- No specific brand mentioned (do NOT add brands)
 - No specific model mentioned
 Result: {{"brands": [], "models": [], "price_range": {{"min": null, "max": 25000}}, "features": ["compact", "android"], "confidence": 0.95}}
 
@@ -41,9 +41,18 @@ Query: "best phones under 10k"
 Chain of Thought:
 - "best phones" = recommendation request (plural)
 - "under 10k" = price range (max: 10000)
-- No specific brand mentioned
+- No specific brand mentioned (do NOT add brands)
 - No specific model mentioned
 Result: {{"brands": [], "models": [], "price_range": {{"min": null, "max": 10000}}, "features": [], "confidence": 0.9}}
+
+Example 4:
+Query: "Best camera phone under ₹30,000?"
+Chain of Thought:
+- "Best camera phone" = recommendation request with camera focus
+- "under ₹30,000" = price range (max: 30000)
+- No specific brand mentioned (do NOT add brands)
+- No specific model mentioned
+Result: {{"brands": [], "models": [], "price_range": {{"min": null, "max": 30000}}, "features": ["camera"], "confidence": 0.95}}
 
 NOW ANALYZE THIS QUERY:
 User Query: "{query}"
